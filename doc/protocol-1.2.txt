@@ -1,0 +1,146 @@
+Version 1.2
+===========
+
+* Types
+-------
+
+char   - 8 bits, signed.
+uchar  - 8 bits, unsigned.
+short  - 16 bits, signed, network byte order.
+ushort - 16 bits, unsigned, network byte order.
+int    - 32 bits, signed, network byte order.
+uint   - 32 bits, unsigned, network byte order.
+float  - 32 bits, IEEE 754 simple precision.
+double - 64 bits, IEEE 754 double precision.
+str    - See "String format" below.
+
+* Packet format
+---------------
+
++--+----------------------+
+|a |    packet content    |
++--+----------------------+
+a (ushort) - Size of packet in bytes.
+
+* String format
+---------------
+
++--+----------------------+
+|a |  string without \0   |
++--+----------------------+
+a (ushort) - Size of string in bytes.
+
+* Hello
+-------
+
+Client -> Server
+Initialization packet. Synchronous reply: Welcome. Socket close on failure.
++-+----+----+------+----+----+
+|a|b   |c   |d ... |e   |f   |
++-+----+----+------+----+----+
+a (char) - 1 - Hello packet identifier.
+b (int)  - 1 - Protocol major version.
+c (int)  - 0 - Protocol minor version.
+d (str)  - Pair name, in standard form, e.g. "EURUSD".
+e (uint) - Period in minutes.
+f (uint) - Number of digits (2, 3, 4 or 5).
+g (str)  - Password.
+
+* Welcome
+---------
+
+Server -> Client
+Confirmation of the connection. Specifies some parameters for the client.
++-+----+
+|a|b   |
++-+----+
+a (char) - 5 - Welcome packet identifier.
+b (uint) - Minimum number of bars needed by the strategy.
+
+* Tick
+------
+
+Client -> Server
+New market tick. Synchronous reply: Order or Continue.
++-+----+----+----+----+----+----+----+-+
+|a|b   |c   |d   |e   |f   |g   |h   |i|
++-+----+----+----+----+----+----+----+-+
+a (char)  - 2 - Tick packet identifier.
+b (float) - Current bar open value.
+c (float) - Current bar high value.
+d (float) - Current bar low value.
+e (float) - Current bar close value.
+f (float) - Market ask value.
+g (float) - Market bid value.
+h (int)   - Client status flag.
+             0 - No open position.
+             1 - Buy position open.
+             2 - Sell position open.
+             3 - Unknown status.
+i (char)  - New bar flag.
+             0 - Same bar as before.
+             1 - New bar.
+
+* Order
+-------
+
+Server -> Client
+Server order to the client. Reply with Trade if status != 0.
++-+----+----+----+----+
+|a|b   |c   |d   |e   |
++-+----+----+----+----+
+a (char)  - 3 - Order packet identifier.
+b (int)   - Order flag.
+             0 - Do nothing.
+             1 - Buy.
+             2 - Sell.
+             3 - Close.
+             4 - Adjust.
+c (float) - Lots.
+d (float) - Stop loss.
+e (float) - Take profit.
+
+* Continue
+----------
+
+Server -> Client
+Orders the client to do nothing (the server was unpaused).
++-+
+|a|
++-+
+a (char) - 7 - Continue packet identifier.
+
+* Trade
+-------
+
+Client -> Server
+Information about a trading action.
++-+----+----+----+----+----+----+----+
+|a|b   |c   |d   |e   |f   |g   |h   |
++-+----+----+----+----+----+----+----+
+a (char)  - 6 - Trade packet identifier.
+b (int)   - Client status flag.
+             0 - No open position.
+             1 - Buy position open.
+             2 - Sell position open.
+             3 - Unknown status.
+c (float) - Market value at open time.
+d (float) - Lots.
+e (float) - Stop loss.
+f (float) - Take profit.
+g (float) - Ask requote at open price.
+h (float) - Bid requote at open price.
+
+* Bar
+-----
+
+Client -> Server
+Previous bar that the server has to know about. No reply. Oldest bar first.
++-+----+----+----+----+
+|a|b   |c   |d   |e   |
++-+----+----+----+----+
+a (char)  - 4 - Bar packet identifier.
+b (float) - Bar open value.
+b (float) - Bar high value.
+b (float) - Bar low value.
+b (float) - Bar close value.
