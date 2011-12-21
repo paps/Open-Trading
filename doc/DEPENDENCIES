@@ -3,3 +3,4 @@ cmake-curses-gui
 libqt4-dev
 libboost-thread-dev
 libluabind-dev
+gnuplot
