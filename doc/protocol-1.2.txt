@@ -1,5 +1,35 @@
-Version 1.2
-===========
+// The Open Trading Project - open-trading.org
+//
+// Copyright (c) 2011 Martin Tapia - martin.tapia@open-trading.org
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Open Trading Procotol
+=====================
+          version 1.2
 
 * Types
 -------
@@ -17,17 +47,18 @@ str    - See "String format" below.
 * Packet format
 ---------------
 
-+--+----------------------+
-|a |    packet content    |
-+--+----------------------+
+/--+-+--------------------\
+|a |b|  packet content    |
+\--+-+--------------------/
 a (ushort) - Size of packet in bytes.
+b (char)   - Packet identifier (specified later for each packet).
 
 * String format
 ---------------
 
-+--+----------------------+
+/--+----------------------\
 |a |  string without \0   |
-+--+----------------------+
+\--+----------------------/
 a (ushort) - Size of string in bytes.
 
 * Hello
@@ -35,9 +66,9 @@ a (ushort) - Size of string in bytes.
 
 Client -> Server
 Initialization packet. Synchronous reply: Welcome. Socket close on failure.
-+-+----+----+------+----+----+
+/-+----+----+------+----+----\
 |a|b   |c   |d ... |e   |f   |
-+-+----+----+------+----+----+
+\-+----+----+------+----+----/
 a (char) - 1 - Hello packet identifier.
 b (int)  - 1 - Protocol major version.
 c (int)  - 0 - Protocol minor version.
@@ -51,9 +82,9 @@ g (str)  - Password.
 
 Server -> Client
 Confirmation of the connection. Specifies some parameters for the client.
-+-+----+
+/-+----\
 |a|b   |
-+-+----+
+\-+----/
 a (char) - 5 - Welcome packet identifier.
 b (uint) - Minimum number of bars needed by the strategy.
 
@@ -62,9 +93,9 @@ b (uint) - Minimum number of bars needed by the strategy.
 
 Client -> Server
 New market tick. Synchronous reply: Order or Continue.
-+-+----+----+----+----+----+----+----+-+
+/-+----+----+----+----+----+----+----+-\
 |a|b   |c   |d   |e   |f   |g   |h   |i|
-+-+----+----+----+----+----+----+----+-+
+\-+----+----+----+----+----+----+----+-/
 a (char)  - 2 - Tick packet identifier.
 b (float) - Current bar open value.
 c (float) - Current bar high value.
@@ -86,9 +117,9 @@ i (char)  - New bar flag.
 
 Server -> Client
 Server order to the client. Reply with Trade if status != 0.
-+-+----+----+----+----+
+/-+----+----+----+----\
 |a|b   |c   |d   |e   |
-+-+----+----+----+----+
+\-+----+----+----+----/
 a (char)  - 3 - Order packet identifier.
 b (int)   - Order flag.
              0 - Do nothing.
@@ -105,9 +136,9 @@ e (float) - Take profit.
 
 Server -> Client
 Orders the client to do nothing (the server was unpaused).
-+-+
+/-\
 |a|
-+-+
+\-/
 a (char) - 7 - Continue packet identifier.
 
 * Trade
@@ -115,9 +146,9 @@ a (char) - 7 - Continue packet identifier.
 
 Client -> Server
 Information about a trading action.
-+-+----+----+----+----+----+----+----+
+/-+----+----+----+----+----+----+----\
 |a|b   |c   |d   |e   |f   |g   |h   |
-+-+----+----+----+----+----+----+----+
+\-+----+----+----+----+----+----+----/
 a (char)  - 6 - Trade packet identifier.
 b (int)   - Client status flag.
              0 - No open position.
@@ -136,11 +167,11 @@ h (float) - Bid requote at open price.
 
 Client -> Server
 Previous bar that the server has to know about. No reply. Oldest bar first.
-+-+----+----+----+----+
+/-+----+----+----+----\
 |a|b   |c   |d   |e   |
-+-+----+----+----+----+
+\-+----+----+----+----/
 a (char)  - 4 - Bar packet identifier.
 b (float) - Bar open value.
-b (float) - Bar high value.
-b (float) - Bar low value.
-b (float) - Bar close value.
+c (float) - Bar high value.
+d (float) - Bar low value.
+e (float) - Bar close value.
