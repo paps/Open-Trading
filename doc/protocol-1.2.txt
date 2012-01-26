@@ -72,7 +72,7 @@ Initialization packet. Synchronous reply: Welcome. Socket close on failure.
 a (char) - 1 - Hello packet identifier.
 b (int)  - 1 - Protocol major version.
 c (int)  - 0 - Protocol minor version.
-d (str)  - Pair name, in standard form, e.g. "EURUSD".
+d (str)  - Pair name (6 characters formed by two ISO 4217 currency codes, e.g. "EURUSD").
 e (uint) - Period in minutes.
 f (uint) - Number of digits (2, 3, 4 or 5).
 g (str)  - Password.
