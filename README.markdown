@@ -1,4 +1,4 @@
-# Open source forex trading ![project-status](http://stillmaintained.com/paps/Open-Trading.png)#
+# Open source forex trading #
 
 ![server](screenshots/server.png)
 
